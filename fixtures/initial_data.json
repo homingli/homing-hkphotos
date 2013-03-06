@@ -1,0 +1,9 @@
+[
+    {
+        "pk": 1, 
+        "model": "sites.site", 
+        "fields": {
+            "name": "Stackato - Year of Python!"
+        }
+    }
+]

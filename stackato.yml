@@ -1,0 +1,16 @@
+name: homing-dpa
+framework: python
+mem: 128M
+env:
+  DJANGO_SETTINGS_MODULE: mysite.settings
+  PYTHONPATH: mysite
+services:
+  ${name}-db: postgresql
+ignores: 
+  - '*.pyc'
+  - 'dev.db'
+hooks:
+  post-staging:
+    - python manage.py syncdb --noinput
+    - python manage.py collectstatic --noinput
+    - python setup_demo_user.py
