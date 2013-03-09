@@ -5,7 +5,34 @@
 {% block head_title %}{% trans "Welcome" %}{% endblock %}
 
 {% block extra_head %}
-<link href="static/css/mysite.css" rel="stylesheet">
+    <link href="/static/css/mysite.css" rel="stylesheet">
+    {% if params.vendor == "galleria" %}
+    <link rel="stylesheet" href="/static/js/galleria/themes/classic/galleria.classic.css">
+    <style> #galleria{ min-width: 500px; background: #000 } </style>  
+    {% endif %}
+    {% if params.vendor == "tn3" %}
+    <link rel="stylesheet" href="/static/js/tn3/tn3.css">
+    <style>
+    /* tn3 */
+      .tn3wrapper {
+          position:relative;
+          background-color:#000;
+          width:768px;
+          overflow:hidden;
+          border:1px #000 solid;
+          margin:20px auto;
+          padding:20px;
+          border-radius:3px;
+          -moz-border-radius:3px;
+          -webkit-border-radius:3px;
+      }
+      .tn3-gallery { width: 768px; height: 559px; }
+      .tn3-image { width: 768px; height: 512px; }
+      .tn3-controls-bg { width: 768px; }
+      .tn3-thumbs { width: 565px; }
+      
+    </style>  
+    {% endif %}
 {% endblock %}
 
 {% block body_class %}home{% endblock %}
@@ -14,48 +41,61 @@
     {% if user.is_authenticated %}
     <h1>{% trans "Chinese New Year in Hong Kong" %}</h1>
 
-    <!-- Carousel
-    ================================================== -->
+    {% if params.vendor != "tn3" and params.vendor != "galleria" %}
+      <div style="margin:0 auto; width:500px">
+        <h3>Choose your gallery type:</h3>
+        <a class="btn btn-large btn-danger" style="height:200px;width:200px;line-height: 4;font-size: 50px;" href="tn3/">TN3</a>
+        <a class="btn btn-large btn-danger" style="height:200px;width:200px;line-height: 4;font-size: 50px;" href="galleria/">Galleria</a>
+      </div>
+    {% endif %}
+    
+      {% load mysite_extras %}
+      {% mkrange 0 80 as imgrange %}
 
+{% if params.vendor == "tn3" %}
+<div class="tn3wrapper">
+  <div class="tn3gallery"><!-- TN3Gallery -->
+      {% for i in imgrange %}
+        <a href="/static/img/hk{{ i }}.jpg"><img src="/static/img/th_hk{{ i }}.jpg"></a>
+      {% endfor %}
+  </div> 
+</div>
+{% endif %}
+
+{% if params.vendor == "galleria" %}
+    <div id="galleria">
+      <img src="/static/img/hkpano1.jpg">
+      {% for i in imgrange %}
+        <a href="/static/img/hk{{ i }}.jpg"><img src="/static/img/th_hk{{ i }}.jpg"></a>
+      {% endfor %}
+      <img src="/static/img/hkpano0.jpg">
+    </div>
+{% endif %}
+
+    <!-- Carousel
+    ==================================================
     <div id="myCarousel" class="carousel">
       <div class="carousel-inner">
         <div class="item active">
-          <img src="static/img/bg1.jpg" alt="">
-          <div class="container">
-            <div class="carousel-caption">
-              <p class="lead"><a class="btn btn-large" href="">Go Stackato!</a></p>
-            </div>
-          </div>
+          <img src="/static/img/hk0.jpg" alt="">
         </div>
+      {% for i in "123456789"|make_list %}
         <div class="item">
-          <img src="static/img/bg2.jpg" alt="">
-          <div class="container">
-            <div class="carousel-caption">
-              <p class="lead"></p>
-              <a class="btn btn-large btn-primary" href="#fea2">Tell us about it</a>
-            </div>
-          </div>
+          <img src="/static/img/hk{{i}}.jpg" alt="">
         </div>
-        <div class="item">
-          <img src="static/img/bg3.jpg" alt="">
-          <div class="container">
-            <div class="carousel-caption">
-              <p class="lead"></p>
-              <a class="btn btn-large btn-primary" href="#fea3">Read more...</a>
-            </div>
-          </div>
-        </div>
+      {% endfor %}
       </div>
       <a class="left carousel-control" href="#myCarousel" data-slide="prev">&lsaquo;</a>
       <a class="right carousel-control" href="#myCarousel" data-slide="next">&rsaquo;</a>
-    </div><!-- /.carousel -->
-
+    </div> /.carousel -->
 
     {% else %}
     <h1>{% trans "Welcome to Pinax" %}</h1>
         {% url account_login as login_url %}
         {% url account_signup as signup_url %}
-        <p style="background:#ccc;padding:40px;">{% blocktrans %}You can <a href="{{ login_url }}" class="btn">Log In</a> or <a href="{{ signup_url }}" class="btn primary">Sign Up</a> to see my photos from Hong Kong.{% endblocktrans %}</p>
+        <p style="background:#ccc;padding:40px;">{% blocktrans %}
+        <a href="{{ login_url }}" class="btn">Log In</a> (demo/demo) to see my photos from Hong Kong.<br />
+        Or if you prefer, you can <a href="{{ signup_url }}" class="btn primary">Sign Up</a> for your own account. {% endblocktrans %}</p>
 
     <p>
         {% blocktrans %}
@@ -86,11 +126,60 @@
 
 {% block extra_body %}
     {% if user.is_authenticated %}
+      
+      {% if params.vendor == "galleria" %}
+    <script src="/static/js/galleria/galleria-1.2.9.min.js"></script>
+    <script src="/static/js/galleria/themes/classic/galleria.classic.min.js"></script>
     <script>
-        (function(){
-          $('#myCarousel').carousel({ interval: 6000 });
-        })
+      Galleria.run('#galleria',{
+        transition:'fade',
+        lightbox: true,
+        height: 0.5625,
+        autoplay: 6000,
+        pauseOnInteraction: false,
+        thumbnails: 'lazy'
+      });
+      Galleria.ready(function() {
+        //Galleria.log('Gallery ready', this);
+        this.lazyLoadChunks(20);
+      });
     </script>
+      {% endif %}
+
+
+<!-- 
+    <script>
+      // for carousel
+      $(document).ready(function() {
+        $('#myCarousel').carousel({ interval: 6000 });
+      });
+    </script>
+-->
+
+      {% if params.vendor == "tn3" %}
+    <script src="/static/js/tn3/jquery.tn3lite.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        var tn3 = $('.tn3gallery').tn3({
+            autoplay: true,
+            skinDir:'static/js/',
+            skins:'',
+            imageClick:'fullscreen',
+            image:{
+                maxZoom:2.0,
+                crop:true,
+                clickEvent:'dblclick',
+                transitions:[{
+                  type: "fade",
+                  easing: "easeInQuad",
+                  duration: 300
+                }]
+            }
+        });
+      });
+    </script>
+      {% endif %}
+    
     {% endif %}
 {% endblock %}
 

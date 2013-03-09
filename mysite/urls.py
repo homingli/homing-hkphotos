@@ -11,8 +11,8 @@ admin.autodiscover()
 urlpatterns = patterns("",
     url(r"^$", direct_to_template, {"template": "homepage.html"}, name="home"),
     url(r"^admin/", include(admin.site.urls)),
-
     url(r"^account/", include("account.urls")),
+    url(r"^(?P<vendor>.+)/$", direct_to_template, {"template": "homepage.html"}, name="home"),
 )
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

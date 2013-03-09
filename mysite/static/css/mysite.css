@@ -4,7 +4,9 @@
 }
 body {
   padding-top:50px;
+  text-align:left;
 }
+
 .carousel-control {
   background-color: transparent;
   border: 0;
