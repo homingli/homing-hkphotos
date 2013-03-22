@@ -1,4 +1,4 @@
-name: homing-dpa
+name: homing-hkphotos
 framework: python
 mem: 128M
 env:
@@ -8,7 +8,8 @@ services:
   ${name}-db: postgresql
 ignores: 
   - '*.pyc'
-  - 'dev.db'
+  - '*.db'
+  - '.git'
 hooks:
   post-staging:
     - python manage.py syncdb --noinput
